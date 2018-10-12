@@ -396,6 +396,7 @@ extern UINT32 g_sys_mem_addr_end;
 #define LOSCFG_BASE_MISC_TRACK_MAX_COUNT                    256
 
 #define CN_OS_SHELL    1
+#define CN_OS_AT       1
 
 
 #ifdef __cplusplus

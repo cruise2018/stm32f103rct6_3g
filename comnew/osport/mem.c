@@ -32,84 +32,32 @@
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
 
-#include "sys_init.h"
-#include "agent_tiny_demo.h"
-#include "at_api_interface.h"
+//include the file which implement the function
+
 #include <osport.h>
-#include <at.h>
-#include <shell.h>
+#include <los_memory.h>
 
 
-UINT32 g_TskHandle = 0xFFFF;
-
-VOID HardWare_Init(VOID)
+void *malloc(int size)
 {
-    SystemClock_Config();
-    dwt_delay_init(SystemCoreClock);
-}
-
-VOID main_task(VOID)
-{
-    //extern at_adaptor_api at_interface;
-    //at_api_register(&at_interface);
+    void *ret = NULL;
     
-    extern bool_t  sim5320e_init(void);
-    sim5320e_init();
-    agent_tiny_entry();
-}
-
-UINT32 creat_main_task()
-{
-    UINT32 uwRet = LOS_OK;
-    TSK_INIT_PARAM_S task_init_param;
-
-    task_init_param.usTaskPrio = 0;
-    task_init_param.pcName = "main_task";
-    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)main_task;
-    task_init_param.uwStackSize = 0x800;
-
-    uwRet = LOS_TaskCreate(&g_TskHandle, &task_init_param);
-    if(LOS_OK != uwRet){
-        return uwRet;
+    if(size > 0)
+    {
+         ret = LOS_MemAlloc(m_aucSysMem0,size);
     }
-    return uwRet;
+
+    return ret;
 }
 
-
-int main(void){
-    UINT32 uwRet = LOS_OK;
-	HardWare_Init();
-    uwRet = LOS_KernelInit();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
-    } 
-  
-#if 0
-    extern  UINT32 LOS_Inspect_Entry(VOID);
-    LOS_Inspect_Entry();
-#endif    
-    //////////////////////APPLICATION INITIALIZE HERE/////////////////////
-    //do the shell module initlialize:use uart 1
-    extern void uart_debug_init(s32_t baud);
-    uart_debug_init(115200);
-    shell_install();
-    
-    //do the at module initialize:use uart 2
-    extern bool_t uart_at_init(s32_t baudrate);
-    extern s32_t uart_at_send(u8_t *buf, s32_t len,u32_t timeout);
-    extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
-    uart_at_init(115200);
-    at_install(uart_at_receive,uart_at_send);
- 
- #if 1
-	uwRet = creat_main_task();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
+bool_t free(void *addr)
+{
+    if(LOS_OK == LOS_MemFree(m_aucSysMem0,addr))
+    {
+        return true;
     }
- #endif 
-    
-    (void)LOS_Start();
-    return 0;
+    else
+    {
+        return false; 
+    }
 }
-
-

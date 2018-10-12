@@ -32,84 +32,99 @@
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
 
-#include "sys_init.h"
-#include "agent_tiny_demo.h"
-#include "at_api_interface.h"
 #include <osport.h>
-#include <at.h>
-#include <shell.h>
-
-
-UINT32 g_TskHandle = 0xFFFF;
-
-VOID HardWare_Init(VOID)
+#include <string.h>
+//this function is used to format the char string to the argc mode
+//this function will changed the original string, used it carefully
+//return how many arguments has been 
+int string2arg(int *argc, const char *argv[],char *string)
 {
-    SystemClock_Config();
-    dwt_delay_init(SystemCoreClock);
+	int argvlen = 0;
+	int paramnum = 0;
+	char *tmp = NULL;
+	char bak;
+	int len;
+
+	argvlen = *argc;
+	*argc = paramnum;
+	if(NULL == string)
+	{
+		return paramnum;
+	}
+
+	//use the '\0' to replace the ' '
+	len = strlen(string);
+	tmp = string;
+	while(tmp < (string + len))
+	{
+		if(*tmp == ' ')
+		{
+			*tmp = '\0';
+		}
+		tmp++;
+	}
+	bak = '\0';
+	tmp = string;
+	while(tmp < (string + len))
+	{
+		if((*tmp != '\0')&&(bak =='\0'))
+		{
+			if(paramnum < argvlen)
+			{
+				argv[paramnum] = tmp;
+				paramnum++;
+			}
+		}
+		bak = *tmp;
+		tmp++;
+	}
+	*argc = paramnum;
+
+	return paramnum;
 }
 
-VOID main_task(VOID)
+
+//we use this for the at command
+//usage:we use this function to deal the at result as the args format
+s32_t  string_split(char *text,char *seperate,char *argv[],s32_t argc)
 {
-    //extern at_adaptor_api at_interface;
-    //at_api_register(&at_interface);
-    
-    extern bool_t  sim5320e_init(void);
-    sim5320e_init();
-    agent_tiny_entry();
+	s32_t result;
+	char *s;
+	s32_t len,i;
+	s = seperate;
+	len = strlen(text);
+	while(*s != '\0') //make all the charactor in text matching the seperate to 0
+	{
+		for(i =0;i<len;i++)
+		{
+			if(text[i]==*s)
+			{
+				text[i]='\0';
+			}
+		}
+		s++;
+	}
+	//ok now check the para start
+	result = 0;
+	s = text;
+	while(result <argc)
+	{
+		//jump the NULL
+		while(*s == '\0')
+		{
+			s++;
+		}
+		//the s is the start
+		if(s < (text + len))
+		{
+			argv[result] = s;
+			result++;
+			s = s+strlen(s);
+		}
+		else
+		{
+			break;
+		}
+	}
+	return result;
 }
-
-UINT32 creat_main_task()
-{
-    UINT32 uwRet = LOS_OK;
-    TSK_INIT_PARAM_S task_init_param;
-
-    task_init_param.usTaskPrio = 0;
-    task_init_param.pcName = "main_task";
-    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)main_task;
-    task_init_param.uwStackSize = 0x800;
-
-    uwRet = LOS_TaskCreate(&g_TskHandle, &task_init_param);
-    if(LOS_OK != uwRet){
-        return uwRet;
-    }
-    return uwRet;
-}
-
-
-int main(void){
-    UINT32 uwRet = LOS_OK;
-	HardWare_Init();
-    uwRet = LOS_KernelInit();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
-    } 
-  
-#if 0
-    extern  UINT32 LOS_Inspect_Entry(VOID);
-    LOS_Inspect_Entry();
-#endif    
-    //////////////////////APPLICATION INITIALIZE HERE/////////////////////
-    //do the shell module initlialize:use uart 1
-    extern void uart_debug_init(s32_t baud);
-    uart_debug_init(115200);
-    shell_install();
-    
-    //do the at module initialize:use uart 2
-    extern bool_t uart_at_init(s32_t baudrate);
-    extern s32_t uart_at_send(u8_t *buf, s32_t len,u32_t timeout);
-    extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
-    uart_at_init(115200);
-    at_install(uart_at_receive,uart_at_send);
- 
- #if 1
-	uwRet = creat_main_task();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
-    }
- #endif 
-    
-    (void)LOS_Start();
-    return 0;
-}
-
-

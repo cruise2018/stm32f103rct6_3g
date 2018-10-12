@@ -39,6 +39,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include <los_base.h>
+
 #ifndef u8_t
 #define u8_t   unsigned char    
 #endif
@@ -68,6 +70,8 @@
 #ifndef false
 #define false 0
 #endif
+
+
 
 
 //we need nothing here except the standard struct here

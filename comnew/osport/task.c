@@ -31,13 +31,11 @@
  * Import, export and usage of Huawei LiteOS in any manner by you shall be in compliance with such
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
-#include "osport.h"
 
 //include the file which implement the function
-#include "los_task.h"
-#include "los_mux.h"
-#include "los_memory.h"
-
+#include  <osport.h> 
+#include <los_task.ph>
+#include <los_task.h>
 
 void task_sleepms(s32_t ms)
 {
@@ -65,123 +63,3 @@ s32_t task_create(const char *name,fnTaskEntry fnTask,s32_t stackisize,void *sta
 }
 
 
-//creat a mutex for the os
-bool_t  mutex_create(mutex_t *mutex)
-{
-    if(LOS_OK == LOS_MuxCreate((UINT32 *)mutex))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-//lock the mutex
-bool_t  mutex_lock(mutex_t mutex)
-{
-    if(LOS_OK == LOS_MuxPend(mutex,LOS_WAIT_FOREVER))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-//unlock the mutex
-bool_t  mutex_unlock(mutex_t mutex)
-{
-    if(LOS_OK == LOS_MuxPost(mutex))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-//delete the mutex
-bool_t  mutex_del(mutex_t *mutex)
-{
-    if(LOS_OK == LOS_MuxDelete((UINT32)*mutex))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-//semp of the os
-bool_t  semp_create(semp_t *semp,s32_t limit,s32_t initvalue)
-{
-    extern UINT32 osSemCreate (UINT16 usCount, UINT16 usMaxCount, UINT32 *puwSemHandle);
-    if(LOS_OK == osSemCreate(initvalue,limit,(UINT32 *)semp))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-bool_t  semp_pend(semp_t semp,u32_t timeout)
-{
-    if(LOS_OK == LOS_SemPend(semp,timeout))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-bool_t  semp_post(semp_t semp)
-{
-    if(LOS_OK == LOS_SemPost(semp))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool_t  semp_del(semp_t *semp)
-{   
-    if(LOS_OK == LOS_SemDelete((UINT32)*semp))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void *malloc(int size)
-{
-    void *ret = NULL;
-    
-    if(size > 0)
-    {
-         ret = LOS_MemAlloc(m_aucSysMem0,size);
-    }
-
-    return ret;
-}
-
-bool_t free(void *addr)
-{
-    if(LOS_OK == LOS_MemFree(m_aucSysMem0,addr))
-    {
-        return true;
-    }
-    else
-    {
-        return false; 
-    }
-}

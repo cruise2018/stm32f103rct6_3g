@@ -32,84 +32,57 @@
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
 
-#include "sys_init.h"
-#include "agent_tiny_demo.h"
-#include "at_api_interface.h"
+//include the file which implement the function
+
 #include <osport.h>
-#include <at.h>
-#include <shell.h>
+#include <los_sem.h>
 
 
-UINT32 g_TskHandle = 0xFFFF;
-
-VOID HardWare_Init(VOID)
+//semp of the os
+bool_t  semp_create(semp_t *semp,s32_t limit,s32_t initvalue)
 {
-    SystemClock_Config();
-    dwt_delay_init(SystemCoreClock);
-}
-
-VOID main_task(VOID)
-{
-    //extern at_adaptor_api at_interface;
-    //at_api_register(&at_interface);
-    
-    extern bool_t  sim5320e_init(void);
-    sim5320e_init();
-    agent_tiny_entry();
-}
-
-UINT32 creat_main_task()
-{
-    UINT32 uwRet = LOS_OK;
-    TSK_INIT_PARAM_S task_init_param;
-
-    task_init_param.usTaskPrio = 0;
-    task_init_param.pcName = "main_task";
-    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)main_task;
-    task_init_param.uwStackSize = 0x800;
-
-    uwRet = LOS_TaskCreate(&g_TskHandle, &task_init_param);
-    if(LOS_OK != uwRet){
-        return uwRet;
+    extern UINT32 osSemCreate (UINT16 usCount, UINT16 usMaxCount, UINT32 *puwSemHandle);
+    if(LOS_OK == osSemCreate(initvalue,limit,(UINT32 *)semp))
+    {
+        return true;
     }
-    return uwRet;
-}
-
-
-int main(void){
-    UINT32 uwRet = LOS_OK;
-	HardWare_Init();
-    uwRet = LOS_KernelInit();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
-    } 
-  
-#if 0
-    extern  UINT32 LOS_Inspect_Entry(VOID);
-    LOS_Inspect_Entry();
-#endif    
-    //////////////////////APPLICATION INITIALIZE HERE/////////////////////
-    //do the shell module initlialize:use uart 1
-    extern void uart_debug_init(s32_t baud);
-    uart_debug_init(115200);
-    shell_install();
-    
-    //do the at module initialize:use uart 2
-    extern bool_t uart_at_init(s32_t baudrate);
-    extern s32_t uart_at_send(u8_t *buf, s32_t len,u32_t timeout);
-    extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
-    uart_at_init(115200);
-    at_install(uart_at_receive,uart_at_send);
- 
- #if 1
-	uwRet = creat_main_task();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
+    else
+    {
+        return false;
     }
- #endif 
-    
-    (void)LOS_Start();
-    return 0;
+}
+bool_t  semp_pend(semp_t semp,u32_t timeout)
+{
+    if(LOS_OK == LOS_SemPend(semp,timeout))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool_t  semp_post(semp_t semp)
+{
+    if(LOS_OK == LOS_SemPost(semp))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
+bool_t  semp_del(semp_t *semp)
+{   
+    if(LOS_OK == LOS_SemDelete((UINT32)*semp))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 

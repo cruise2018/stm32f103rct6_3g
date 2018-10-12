@@ -32,84 +32,61 @@
  * applicable export control laws and regulations.
  *---------------------------------------------------------------------------*/
 
-#include "sys_init.h"
-#include "agent_tiny_demo.h"
-#include "at_api_interface.h"
+#ifndef __OSSHELL_H
+#define __OSSHELL_H
+
+#include <los_config.h>
+#if CN_OS_SHELL
+
 #include <osport.h>
-#include <at.h>
-#include <shell.h>
+//this is a shell module designed for the os
+//this is a shell type,maybe a command or the data variables
+enum en_os_shell_type{
+	EN_OSSHELL_CMD = 0,
+	EN_OSSHELL_VAR,       //up till now, we only support 4 bytes
+	EN_OSSHELL_LAST,
+};
 
+#define BUILD_VAR_NAME(A,B)    A##B
 
-UINT32 g_TskHandle = 0xFFFF;
-
-VOID HardWare_Init(VOID)
-{
-    SystemClock_Config();
-    dwt_delay_init(SystemCoreClock);
-}
-
-VOID main_task(VOID)
-{
-    //extern at_adaptor_api at_interface;
-    //at_api_register(&at_interface);
-    
-    extern bool_t  sim5320e_init(void);
-    sim5320e_init();
-    agent_tiny_entry();
-}
-
-UINT32 creat_main_task()
-{
-    UINT32 uwRet = LOS_OK;
-    TSK_INIT_PARAM_S task_init_param;
-
-    task_init_param.usTaskPrio = 0;
-    task_init_param.pcName = "main_task";
-    task_init_param.pfnTaskEntry = (TSK_ENTRY_FUNC)main_task;
-    task_init_param.uwStackSize = 0x800;
-
-    uwRet = LOS_TaskCreate(&g_TskHandle, &task_init_param);
-    if(LOS_OK != uwRet){
-        return uwRet;
+//this is the shell function module.the register function must have the same type
+//uptils now, we don't care the return value
+typedef s32_t (*fn_shell_cmdentry)(s32_t argc, const char *argv[]); 
+struct shell_item_t{
+	const char     *name;   //point to the shell name string
+	const char     *help;   //point to the shell description string
+	void           *addr;   //point to the shell function or the shell data
+	u16_t           type;   //used to  point the shell type:command or a data
+	u16_t           len;    //used to  point the shell command or data length
+};
+//this define will create  a shell command with the specified cmdname
+#define OSSHELL_EXPORT_CMD(cmdentry,cmdname,cmdhelp)      \
+    static const struct shell_item_t BUILD_VAR_NAME(__oshell_,cmdentry) __attribute__((used,section("oshell")))= \
+    {                           \
+        .name=cmdname,    \
+        .help=cmdhelp,    \
+        .addr=(void *)&cmdentry,              \
+		.type=EN_OSSHELL_CMD,           \
+		.len = sizeof(void *),             \
     }
-    return uwRet;
-}
-
-
-int main(void){
-    UINT32 uwRet = LOS_OK;
-	HardWare_Init();
-    uwRet = LOS_KernelInit();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
-    } 
-  
-#if 0
-    extern  UINT32 LOS_Inspect_Entry(VOID);
-    LOS_Inspect_Entry();
-#endif    
-    //////////////////////APPLICATION INITIALIZE HERE/////////////////////
-    //do the shell module initlialize:use uart 1
-    extern void uart_debug_init(s32_t baud);
-    uart_debug_init(115200);
-    shell_install();
-    
-    //do the at module initialize:use uart 2
-    extern bool_t uart_at_init(s32_t baudrate);
-    extern s32_t uart_at_send(u8_t *buf, s32_t len,u32_t timeout);
-    extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
-    uart_at_init(115200);
-    at_install(uart_at_receive,uart_at_send);
- 
- #if 1
-	uwRet = creat_main_task();
-    if (uwRet != LOS_OK){
-        return LOS_NOK;
+//this define will create  a create a shell data with the specified name
+#define OSSHELL_EXPORT_VAR(var,varname,varhelp)      \
+    static const struct shell_item_t BUILD_VAR_NAME(__oshell_,var) __attribute__((used,section("oshell")))= \
+    {                           \
+        .name=varname,    \
+        .help=varhelp,    \
+        .addr=(void *)&var,              \
+		.type=EN_OSSHELL_VAR,                   \
+		.len =sizeof(var),               \
     }
- #endif 
     
-    (void)LOS_Start();
-    return 0;
-}
+void shell_install(void);    
+#else
+#define OSSHELL_EXPORT_CMD(cmdname,cmdentry,cmdhelp)
+#define OSSHELL_EXPORT_VAR(varname,var,varhelp)
+#define shell_install()
+
+#endif   //end for the shell_config
 
 
+#endif /* __OSSHELL_H */
