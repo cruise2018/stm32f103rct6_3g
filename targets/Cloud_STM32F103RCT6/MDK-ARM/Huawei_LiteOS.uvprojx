@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32F103RC</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.1.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.2.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0xC000) IROM(0x08000000,0x40000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>1</BrowseInformation>
+          <BrowseInformation>0</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -335,9 +335,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--diag_suppress=1,47,177,186,223,1295</MiscControls>
-              <Define>USE_HAL_DRIVER, STM32F103xE,USE_MBED_TLS,MBEDTLS_CONFIG_FILE=&lt;los_mbedtls_config.h&gt;,LWM2M_LITTLE_ENDIAN,LWM2M_CLIENT_MODE,NDEBUG,LOS_KERNEL_DEBUG_OUT</Define>
+              <Define>USE_HAL_DRIVER, STM32F103xE,USE_MBED_TLS,MBEDTLS_CONFIG_FILE=&lt;los_mbedtls_config.h&gt;,LWM2M_LITTLE_ENDIAN,LWM2M_CLIENT_MODE,NDEBUG,LOS_KERNEL_DEBUG_OUT,WITH_DTLS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Inc;..\..\..\components\cmsis;..\..\..\components\cmsis\1.0;..\..\..\components\cmsis\2.0;..\..\..\kernel\base\include;..\..\..\kernel\include;..\..\..\kernel\extended\include;..\OS_CONFIG;..\..\..\arch\arm\arm-m\include;..\..\..\arch\arm\arm-m\cortex-m3;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy;..\..\..\components\connectivity\lwm2m\core\er-coap-13;..\..\..\components\connectivity\lwm2m\core;..\..\..\components\connectivity\lwm2m\examples\shared;..\..\..\components\security\mbedtls\mbedtls_port;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include\mbedtls;..\..\..\components\connectivity\agent_tiny\comm\include;..\..\..\components\connectivity\agent_tiny\lwm2m_client;..\..\..\components\connectivity\agent_tiny\examples;..\..\..\components\connectivity\agent_tiny\osadapter;..\Hardware\Inc;..\..\..\drivers\devices\net\w5500\base;..\..\..\drivers\devices\net\w5500\internet;..\..\..\components\connectivity\at_frame;..\..\..\drivers\devices\gprs;..\..\..\examples\include;..\..\..\shell;..\..\..\components\net\ppp_port\osport;..\..\..\at</IncludePath>
+              <IncludePath>..\Inc;..\..\..\components\cmsis;..\..\..\components\cmsis\1.0;..\..\..\components\cmsis\2.0;..\..\..\kernel\base\include;..\..\..\kernel\include;..\..\..\kernel\extended\include;..\OS_CONFIG;..\..\..\arch\arm\arm-m\include;..\..\..\arch\arm\arm-m\cortex-m3;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy;..\..\..\components\connectivity\lwm2m\core\er-coap-13;..\..\..\components\connectivity\lwm2m\core;..\..\..\components\connectivity\lwm2m\examples\shared;..\..\..\components\security\mbedtls\mbedtls_port;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include\mbedtls;..\..\..\components\connectivity\agent_tiny\comm\include;..\..\..\components\connectivity\agent_tiny\lwm2m_client;..\..\..\components\connectivity\agent_tiny\examples;..\..\..\components\connectivity\agent_tiny\osadapter;..\Hardware\Inc;..\..\..\drivers\devices\net\w5500\base;..\..\..\drivers\devices\net\w5500\internet;..\..\..\components\connectivity\at_frame;..\..\..\drivers\devices\gprs;..\..\..\examples\include;..\..\..\comnew\osport;..\..\..\comnew\at;..\..\..\comnew\shell</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -417,9 +417,14 @@
               <FilePath>..\Src\dwt.c</FilePath>
             </File>
             <File>
-              <FileName>at_io.c</FileName>
+              <FileName>uart_at.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Src\at_io.c</FilePath>
+              <FilePath>..\Src\uart_at.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\uart_debug.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1254,61 +1259,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>osport</GroupName>
-          <Files>
-            <File>
-              <FileName>iodev.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\net\ppp_port\osport\iodev.c</FilePath>
-            </File>
-            <File>
-              <FileName>kernel.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\net\ppp_port\osport\kernel.c</FilePath>
-            </File>
-            <File>
-              <FileName>osport.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\components\net\ppp_port\osport\osport.h</FilePath>
-            </File>
-            <File>
-              <FileName>ring.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\net\ppp_port\osport\ring.c</FilePath>
-            </File>
-            <File>
-              <FileName>string.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\net\ppp_port\osport\string.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>shell</GroupName>
-          <Files>
-            <File>
-              <FileName>shell.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\shell\shell.h</FilePath>
-            </File>
-            <File>
-              <FileName>shell_cmd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\shell\shell_cmd.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell_main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\shell\shell_main.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\shell\shell_test.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>osconfig</GroupName>
           <Files>
             <File>
@@ -1329,17 +1279,87 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>osport</GroupName>
+          <Files>
+            <File>
+              <FileName>iodev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\iodev.c</FilePath>
+            </File>
+            <File>
+              <FileName>mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\mutex.c</FilePath>
+            </File>
+            <File>
+              <FileName>osport.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\comnew\osport\osport.h</FilePath>
+            </File>
+            <File>
+              <FileName>ring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\ring.c</FilePath>
+            </File>
+            <File>
+              <FileName>sem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\sem.c</FilePath>
+            </File>
+            <File>
+              <FileName>string.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\string.c</FilePath>
+            </File>
+            <File>
+              <FileName>task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\osport\task.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>shell</GroupName>
+          <Files>
+            <File>
+              <FileName>shell.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\comnew\shell\shell.h</FilePath>
+            </File>
+            <File>
+              <FileName>shell_cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\shell\shell_cmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\shell\shell_main.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\shell\shell_test.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>at</GroupName>
           <Files>
             <File>
               <FileName>at.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\at\at.c</FilePath>
+              <FilePath>..\..\..\comnew\at\at.c</FilePath>
             </File>
             <File>
               <FileName>at.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\at\at.h</FilePath>
+              <FilePath>..\..\..\comnew\at\at.h</FilePath>
             </File>
           </Files>
         </Group>

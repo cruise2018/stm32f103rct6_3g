@@ -35,7 +35,9 @@
 #include "sys_init.h"
 #include "agent_tiny_demo.h"
 #include "at_api_interface.h"
-#include "osport.h"
+#include <osport.h>
+#include <at.h>
+#include <shell.h>
 
 
 UINT32 g_TskHandle = 0xFFFF;
@@ -82,27 +84,22 @@ int main(void){
         return LOS_NOK;
     } 
   
-    /*
+#if 0
     extern  UINT32 LOS_Inspect_Entry(VOID);
     LOS_Inspect_Entry();
-    */
-    Debug_USART3_UART_Init(); //UART3 FOR THE DBEUG
-    #include <shell.h>
+#endif    
+    //////////////////////APPLICATION INITIALIZE HERE/////////////////////
+    //do the shell module initlialize:use uart 1
+    extern void uart_debug_init(s32_t baud);
+    uart_debug_init(115200);
     shell_install();
-#if 1
-    #include <at.h>   
-    extern int32_t atuart_init(void);
-    extern int32_t atuart_rcv(uint8_t *buf,int32_t len,uint32_t timeout);
-    extern int32_t atuart_snd(uint8_t *buf, int32_t len,uint32_t timeout);
-    atuart_init();
-    at_install(atuart_rcv,atuart_snd);
-
-    extern int32_t at_usart_init(void);
-    extern int32_t at_rcv(uint8_t *buf,int32_t len,uint32_t timeout);
-    extern int32_t at_snd(uint8_t *buf, int32_t len,uint32_t timeout);
-    //at_usart_init();
-    //at_install(at_rcv,at_snd,256);
- #endif 
+    
+    //do the at module initialize:use uart 2
+    extern bool_t uart_at_init(s32_t baudrate);
+    extern s32_t uart_at_send(u8_t *buf, s32_t len,u32_t timeout);
+    extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
+    uart_at_init(115200);
+    at_install(uart_at_receive,uart_at_send);
  
  #if 1
 	uwRet = creat_main_task();

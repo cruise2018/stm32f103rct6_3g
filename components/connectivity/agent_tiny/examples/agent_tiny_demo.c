@@ -103,13 +103,13 @@
 //unsigned char g_psk_value[]={0x91, 0xb4, 0xc3, 0x4d, 0x59, 0x7a, 0x9b, 0x0b, 0x44, 0xc4, 0x2a, 0x71, 0x04, 0xec, 0x14, 0x23};
 
 //6c74374a7124eed651950da81e5e2b96
-//char * g_endpoint_name = "zqf04";
-//unsigned char g_psk_value[32];
-//const char *g_psk_string="6c74374a7124eed651950da81e5e2b96";
-
-char * g_endpoint_name = "zqf05";
+char * g_endpoint_name = "zqf04";
 unsigned char g_psk_value[32];
 const char *g_psk_string="6c74374a7124eed651950da81e5e2b96";
+
+//char * g_endpoint_name = "zqf05";
+//unsigned char g_psk_value[32];
+//const char *g_psk_string="6c74374a7124eed651950da81e5e2b96";
 
 //use this function to transfer the string to the byte array
 //return the array length transfered while  failed
@@ -178,8 +178,7 @@ void app_data_report(void)
     data_report_t report_data;
     float v1;
     while(1)
-    {
-        
+    {  
         switch(times)
         {
             case 0:   //send the environ state
@@ -324,7 +323,8 @@ void agent_tiny_entry(void)
     atiny_params->server_params.life_time = 20;
     atiny_params->server_params.storing_cnt = 0;
 
-    atiny_params->bootstrap_mode = BOOTSTRAP_FACTORY;
+    atiny_params->server_params.bootstrap_mode = BOOTSTRAP_FACTORY;
+    atiny_params->server_params.hold_off_time = 10;
 
     //pay attention: index 0 for iot server, index 1 for bootstrap server.
     iot_security_param = &(atiny_params->security_params[0]);
