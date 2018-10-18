@@ -337,7 +337,7 @@
               <MiscControls>--diag_suppress=1,47,177,186,223,1295</MiscControls>
               <Define>USE_HAL_DRIVER, STM32F103xE,USE_MBED_TLS,MBEDTLS_CONFIG_FILE=&lt;los_mbedtls_config.h&gt;,LWM2M_LITTLE_ENDIAN,LWM2M_CLIENT_MODE,NDEBUG,LOS_KERNEL_DEBUG_OUT,WITH_DTLS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Inc;..\..\..\components\cmsis;..\..\..\components\cmsis\1.0;..\..\..\components\cmsis\2.0;..\..\..\kernel\base\include;..\..\..\kernel\include;..\..\..\kernel\extended\include;..\OS_CONFIG;..\..\..\arch\arm\arm-m\include;..\..\..\arch\arm\arm-m\cortex-m3;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy;..\..\..\components\connectivity\lwm2m\core\er-coap-13;..\..\..\components\connectivity\lwm2m\core;..\..\..\components\connectivity\lwm2m\examples\shared;..\..\..\components\security\mbedtls\mbedtls_port;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include\mbedtls;..\..\..\components\connectivity\agent_tiny\comm\include;..\..\..\components\connectivity\agent_tiny\lwm2m_client;..\..\..\components\connectivity\agent_tiny\examples;..\..\..\components\connectivity\agent_tiny\osadapter;..\Hardware\Inc;..\..\..\drivers\devices\net\w5500\base;..\..\..\drivers\devices\net\w5500\internet;..\..\..\components\connectivity\at_frame;..\..\..\drivers\devices\gprs;..\..\..\examples\include;..\..\..\comnew\osport;..\..\..\comnew\at;..\..\..\comnew\shell</IncludePath>
+              <IncludePath>..\Inc;..\..\..\components\cmsis;..\..\..\components\cmsis\1.0;..\..\..\components\cmsis\2.0;..\..\..\kernel\base\include;..\..\..\kernel\include;..\..\..\kernel\extended\include;..\OS_CONFIG;..\..\..\arch\arm\arm-m\include;..\..\..\arch\arm\arm-m\cortex-m3;..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy;..\..\..\components\connectivity\lwm2m\core\er-coap-13;..\..\..\components\connectivity\lwm2m\core;..\..\..\components\connectivity\lwm2m\examples\shared;..\..\..\components\security\mbedtls\mbedtls_port;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include;..\..\..\components\security\mbedtls\mbedtls-2.6.0\include\mbedtls;..\..\..\components\connectivity\agent_tiny\comm\include;..\..\..\components\connectivity\agent_tiny\lwm2m_client;..\..\..\components\connectivity\agent_tiny\examples;..\..\..\components\connectivity\agent_tiny\osadapter;..\Hardware\Inc;..\..\..\drivers\devices\net\w5500\base;..\..\..\drivers\devices\net\w5500\internet;..\..\..\components\connectivity\at_frame;..\..\..\drivers\devices\gprs;..\..\..\examples\include;..\..\..\comnew\osport;..\..\..\comnew\at;..\..\..\comnew\shell;..\..\..\comnew\device;..\..\..\components\fs\include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1360,6 +1360,41 @@
               <FileName>at.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\comnew\at\at.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>drive</GroupName>
+          <Files>
+            <File>
+              <FileName>los_dev.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\device\los_dev.c</FilePath>
+            </File>
+            <File>
+              <FileName>los_dev.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\comnew\device\los_dev.h</FilePath>
+            </File>
+            <File>
+              <FileName>los_dev_fs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\device\los_dev_fs.c</FilePath>
+            </File>
+            <File>
+              <FileName>los_dev_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\comnew\device\los_dev_test.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>fs</GroupName>
+          <Files>
+            <File>
+              <FileName>los_vfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\fs\vfs\los_vfs.c</FilePath>
             </File>
           </Files>
         </Group>

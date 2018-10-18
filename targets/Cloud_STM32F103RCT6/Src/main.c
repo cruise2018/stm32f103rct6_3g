@@ -100,8 +100,11 @@ int main(void){
     extern s32_t uart_at_receive(u8_t *buf,s32_t len,u32_t timeout);
     uart_at_init(115200);
     at_install(uart_at_receive,uart_at_send);
- 
- #if 1
+		
+    extern bool_t  los_driv_module_init(void);
+    los_driv_module_init();
+
+ #if 0
 	uwRet = creat_main_task();
     if (uwRet != LOS_OK){
         return LOS_NOK;
