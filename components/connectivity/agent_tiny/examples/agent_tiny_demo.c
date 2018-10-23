@@ -165,6 +165,8 @@ struct data_ledstate
 };
 #pragma pack()
 
+#include <osport.h>
+static bool_t s_report_en= false;
 
 
 /*lint -e550*/
@@ -179,73 +181,76 @@ void app_data_report(void)
     float v1;
     while(1)
     {  
-        switch(times)
+        if(s_report_en)
         {
-            case 0:   //send the environ state
-                //simulate the environment data
-                environstate.msgid = 0;
-                memcpy(environstate.intensity,"10  ",4);
-                v1 = 12.3;
-                sprintf(environstate.humidity, "%.1f", v1);
-                v1 = 45.6;
-                sprintf(environstate.temprature,"%.1f", v1);         
-                report_data.buf = (uint8_t *)&environstate;
-                report_data.callback = ack_callback;
-                report_data.cookie = cnt;
-                report_data.len = sizeof(environstate);
-                report_data.type = APP_DATA;
-                ret = atiny_data_report(g_phandle, &report_data);
-                break;
-            
-            case 1:   //send the led state 1  on 
-                //simulate the led state
-                ledstate.msgid = 1;
-                memcpy(ledstate.state," ON",3);
+            switch(times)
+            {
+                case 0:   //send the environ state
+                    //simulate the environment data
+                    environstate.msgid = 0;
+                    memcpy(environstate.intensity,"10  ",4);
+                    v1 = 12.3;
+                    sprintf(environstate.humidity, "%.1f", v1);
+                    v1 = 45.6;
+                    sprintf(environstate.temprature,"%.1f", v1);         
+                    report_data.buf = (uint8_t *)&environstate;
+                    report_data.callback = ack_callback;
+                    report_data.cookie = cnt;
+                    report_data.len = sizeof(environstate);
+                    report_data.type = APP_DATA;
+                    ret = atiny_data_report(g_phandle, &report_data);
+                    break;
                 
-                report_data.buf = (uint8_t *)&ledstate;
-                report_data.callback = ack_callback;
-                report_data.cookie = cnt;
-                report_data.len = sizeof(ledstate);
-                report_data.type = APP_DATA;
-                ret = atiny_data_report(g_phandle, &report_data);
-                break;            
-            case 2:   //send the led state 2  off
-                //simulate the led state
-                ledstate.msgid = 1;
-                memcpy(ledstate.state,"OFF",3);
-                
-                report_data.buf = (uint8_t *)&ledstate;
-                report_data.callback = ack_callback;
-                report_data.cookie = cnt;
-                report_data.len = sizeof(ledstate);
-                report_data.type = APP_DATA;
-                ret = atiny_data_report(g_phandle, &report_data);
-                break; 
-                /*
-            case 3:   //send the led state 3  dam
-                //simulate the led state
-                ledstate.msgid = 1;
-                memcpy(ledstate.state,"DAM",3);
-                report_data.buf = (uint8_t *)&ledstate;
-                report_data.callback = ack_callback;
-                report_data.cookie = cnt;
-                report_data.len = sizeof(ledstate);
-                report_data.type = APP_DATA;
-                ret = atiny_data_report(g_phandle, &report_data);
-                break;
-            */
-            default:
-                //ret = atiny_data_change(g_phandle, DEVICE_MEMORY_FREE);
-                break;
+                case 1:   //send the led state 1  on 
+                    //simulate the led state
+                    ledstate.msgid = 1;
+                    memcpy(ledstate.state," ON",3);
+                    
+                    report_data.buf = (uint8_t *)&ledstate;
+                    report_data.callback = ack_callback;
+                    report_data.cookie = cnt;
+                    report_data.len = sizeof(ledstate);
+                    report_data.type = APP_DATA;
+                    ret = atiny_data_report(g_phandle, &report_data);
+                    break;            
+                case 2:   //send the led state 2  off
+                    //simulate the led state
+                    ledstate.msgid = 1;
+                    memcpy(ledstate.state,"OFF",3);
+                    
+                    report_data.buf = (uint8_t *)&ledstate;
+                    report_data.callback = ack_callback;
+                    report_data.cookie = cnt;
+                    report_data.len = sizeof(ledstate);
+                    report_data.type = APP_DATA;
+                    ret = atiny_data_report(g_phandle, &report_data);
+                    break; 
+                    /*
+                case 3:   //send the led state 3  dam
+                    //simulate the led state
+                    ledstate.msgid = 1;
+                    memcpy(ledstate.state,"DAM",3);
+                    report_data.buf = (uint8_t *)&ledstate;
+                    report_data.callback = ack_callback;
+                    report_data.cookie = cnt;
+                    report_data.len = sizeof(ledstate);
+                    report_data.type = APP_DATA;
+                    ret = atiny_data_report(g_phandle, &report_data);
+                    break;
+                */
+                default:
+                    //ret = atiny_data_change(g_phandle, DEVICE_MEMORY_FREE);
+                    break;
+            }
+            printf("report state:times:%d ret:%d\n\r",times, ret);
+            if(0 == ret)
+            {
+                times = (times+1)% 7;
+            }
+            cnt++;
+         
         }
-        printf("report state:times:%d ret:%d\n\r",times, ret);
-        if(0 == ret)
-        {
-            times = (times+1)% 7;
-        }
-        cnt++;
-        (void)LOS_TaskDelay(10*1000);
-
+        task_sleepms(10*1000);
     }
 }
 /*lint +e550*/
@@ -377,5 +382,31 @@ void agent_tiny_entry(void)
 
     (void)atiny_bind(device_info, g_phandle);
 }
+
+
+#include <shell.h>
+//add a shell command for the debug here
+static s32_t __shell_appreport(s32_t argc,const char *argv[])
+{
+    if(argc == 2 )
+    {
+        if(0 == strcmp("start",argv[1]))
+        {
+            s_report_en = true;
+        
+        }
+        else
+        {
+            s_report_en = false;
+        }
+    }
+    
+    return 0;
+}
+
+OSSHELL_EXPORT_CMD(__shell_appreport,"appreport","appreport start/stop");
+
+
+
 
 

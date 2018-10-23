@@ -464,6 +464,76 @@ bool_t  sim5320e_init(void)
 
 
 
+//
+
+static bool_t s_gps_report = false;
+
+static u32_t __task_gps_entry(void *arg)
+{
+    u8_t   respbuf[128];
+    u32_t  resplen;
+    const char *cmdbuf;
+   
+    while(1)
+    {
+        if(s_gps_report)
+        {
+             memset(respbuf,0,128);
+             cmdbuf =  "AT+CGPS=1\r";  //which will open the gps
+             resplen = at_command((u8_t *)cmdbuf,strlen((char *)cmdbuf),"OK",respbuf,128,1000);
+             if(resplen > 0)
+             {
+                 printf("%s:%s\r\n",__FUNCTION__,respbuf);
+             }
+             
+             memset(respbuf,0,128);
+             cmdbuf =  "AT+CGPSINFO\r";  //which will open the gps
+             resplen = at_command((u8_t *)cmdbuf,strlen((char *)cmdbuf),"OK",respbuf,128,1000);
+             if(resplen > 0)
+             {
+                 printf("%s:%s\r\n",__FUNCTION__,respbuf);
+             }       
+        }
+        task_sleepms(5*1000);
+    }
+
+}
+
+
+
+static s32_t __sim5320e_gps_en(s32_t argc,const char *argv[])
+{
+    task_create("gpsreport",__task_gps_entry,0x800,NULL,NULL,14);
+
+    return 0;
+}
+
+static s32_t __sim5320e_gps_report(s32_t argc,const char *argv[])
+{
+    if ( 2 == argc )
+    {
+        if( 0 == strcmp ( "enable" , argv[1] ) )
+        {
+            s_gps_report = true ;
+        }
+        else 
+        {
+            s_gps_report = false ;
+ 
+        }
+    
+    }
+    
+    return 0;
+}
+
+
+#include <shell.h>
+
+OSSHELL_EXPORT_CMD(__sim5320e_gps_en,"gpsen","gpsen");
+OSSHELL_EXPORT_CMD(__sim5320e_gps_report,"gpsreport","gpsreport  enable/disable");
+
+
 
 
 
